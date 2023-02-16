@@ -53,14 +53,45 @@ if __name__ == "__main__":
         return [sum(x) for x in zip(a, b)]
 
     # aggregate sums for y1
-    differences_y1 = []
+    differences = []
     for indx, td_row in enumerate(TrainingData.select(TrainingData.x, TrainingData.y1)):
-        differences = [(td_row.y1 - y_val)**2 for y_val in ideal_functions[indx]]
-        differences_y1.append(differences)
+        diffs = [(td_row.y1 - y_val)**2 for y_val in ideal_functions[indx]]
+        differences.append(differences)
 
-    sums_y1 = reduce(sum_diffs, differences_y1)
-    minimal_sum_y1 = min(sums_y1)
-    print(sums_y1.index(minimal_sum_y1))
+    sums = reduce(sum_diffs, differences)
+    minimal_sum = min(sums)
+    print(sums.index(minimal_sum))
+
+    # aggregate sums for y2
+    differences = []
+    for indx, td_row in enumerate(TrainingData.select(TrainingData.x, TrainingData.y2)):
+        diffs = [(td_row.y2 - y_val)**2 for y_val in ideal_functions[indx]]
+        differences.append(differences)
+
+    sums = reduce(sum_diffs, differences)
+    minimal_sum = min(sums)
+    print(sums.index(minimal_sum))
+
+    # aggregate sums for y3
+    differences = []
+    for indx, td_row in enumerate(TrainingData.select(TrainingData.x, TrainingData.y3)):
+        diffs = [(td_row.y3 - y_val)**2 for y_val in ideal_functions[indx]]
+        differences.append(differences)
+
+    sums = reduce(sum_diffs, differences)
+    minimal_sum = min(sums)
+    print(sums.index(minimal_sum))
+
+    # aggregate sums for y4
+    differences = []
+    for indx, td_row in enumerate(TrainingData.select(TrainingData.x, TrainingData.y4)):
+        diffs = [(td_row.y4 - y_val)**2 for y_val in ideal_functions[indx]]
+        differences.append(differences)
+
+    sums = reduce(sum_diffs, differences)
+    minimal_sum = min(sums)
+    print(sums.index(minimal_sum))
+
 
 
     dbo.destroy()
