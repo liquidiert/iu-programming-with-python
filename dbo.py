@@ -5,7 +5,7 @@ class DBO:
 
     def init(self):
         self.db.connect()
-        self.db.create_tables([TrainingData])
+        self.db.create_tables([TrainingData, Result])
 
     def destroy(self):
         for row in TrainingData.select():
@@ -45,3 +45,15 @@ class IdealFunction(Model):
     class Meta:
         database = DBO.db
 
+class Result(Model):
+    """
+    A model class holding the results of an ideal function
+    """
+
+    x = FloatField()
+    y = FloatField()
+    y_delta = FloatField()
+    ideal_function = CharField(max_length=3)
+
+    class Meta:
+        database = DBO.db
