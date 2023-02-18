@@ -3,7 +3,9 @@ from dbo import DBO, TrainingData, IdealFunction, Result
 from peewee import FloatField
 from functools import reduce
 import math
-import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+
 
 def read_data():
     """
@@ -126,13 +128,69 @@ if __name__ == "__main__":
         find_ideal_match(point, ideal_function_index_y3)
         find_ideal_match(point, ideal_function_index_y4)
 
-    p = px.scatter(test_data, x="x", y="y")
+    """
+    Create plots to visualize data
+    """
 
-    p.show()
+    fig = make_subplots(rows=2, cols=2, start_cell="top-left", subplot_titles=[
+        "Test data",
+        "Training data",
+        "Ideal functions",
+        "Matched test data and ideal functions"
+    ])
 
+    # test data
+    fig.add_trace(go.Scatter(x=test_data["x"], y=test_data["y"], mode="markers", name="test_data"), row=1, col=1)
+
+    # training data
+    x_training = []
+    y1_training = []
+    y2_training = []
+    y3_training = []
+    y4_training = []
+
+    for row in TrainingData.select():
+        x_training.append(row.x)
+        y1_training.append(row.y1)
+        y2_training.append(row.y2)
+        y3_training.append(row.y3)
+        y4_training.append(row.y4)
+
+    fig.add_trace(go.Scatter(x=x_training, y=y1_training, name="training_data_y1"), row=1, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=y2_training, name="training_data_y2"), row=1, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=y3_training, name="training_data_y3"), row=1, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=y4_training, name="training_data_y4"), row=1, col=2)
+
+    # ideal functions
+    ideal_y1 = []
+    ideal_y2 = []
+    ideal_y3 = []
+    ideal_y4 = []
+
+    for row in IdealFunction.select():
+        ideal_y1.append(row.__dict__["__data__"][f"y{ideal_function_index_y1+1}"])
+        ideal_y2.append(row.__dict__["__data__"][f"y{ideal_function_index_y2+1}"])
+        ideal_y3.append(row.__dict__["__data__"][f"y{ideal_function_index_y3+1}"])
+        ideal_y4.append(row.__dict__["__data__"][f"y{ideal_function_index_y4+1}"])
+
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y1, name="ideal_y1"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y2, name="ideal_y2"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y3, name="ideal_y3"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y4, name="ideal_y4"), row=2, col=1)
+
+    # matched test data and ideal functions
+    matched_x = []
+    matched_y = []
     for row in Result.select():
-        print(
-            f"x: {row.x}, y: {row.y}, y_delta: {row.y_delta} function: {row.ideal_function}"
-        )
+        matched_x.append(row.x)
+        matched_y.append(row.y)
+
+    fig.add_trace(go.Scatter(x=matched_x, y=matched_y, mode="markers", name="test_data"), row=2, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y1, name="ideal_y1"), row=2, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y2, name="ideal_y2"), row=2, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y3, name="ideal_y3"), row=2, col=2)
+    fig.add_trace(go.Scatter(x=x_training, y=ideal_y4, name="ideal_y4"), row=2, col=2)
+
+    fig.show()
 
     dbo.destroy()
