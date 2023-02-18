@@ -14,6 +14,9 @@ class DBO:
         for row in IdealFunction.select():
             row.delete_instance()
 
+        for row in Result.select():
+            row.delete_instance()
+
         self.db.close()
 
 class TrainingData(Model):
